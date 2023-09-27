@@ -44,8 +44,14 @@ class Tokenizer:
 		(r'=', lambda s, tok: Token('=', tok)),
 		(r';', lambda s, tok: Token(';', tok)),
 		(r',', lambda s, tok: Token(',', tok)),
+		(r':', lambda s, tok: Token(':', tok)), 
+		(r'\[', lambda s, tok: Token('[', tok)), 
+		(r'\]', lambda s, tok: Token(']', tok)), 
+		(r'<', lambda s, tok: Token('<', tok)), 
+		(r'>', lambda s, tok: Token('>', tok)), 
 		(r'.', lambda s, tok: print("Error: caracter ilegal '%s'" % tok))
-		]
+	]
+
 
 	def tokenizer(self, text):
 		lineno = 1
