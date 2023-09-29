@@ -8,7 +8,7 @@ class Lexer(sly.Lexer):
         'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT',
 
         # Literales
-        'IDENT', 'ICONST', 'RCONST', 'SCONST',
+        'ICONST', 'RCONST', 'SCONST','IDENT',
 
         # Operadores y símbolos
         'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET'
@@ -67,10 +67,8 @@ class Lexer(sly.Lexer):
         self.index += 1
 
 if __name__ == '__main__':
-    from sys import argv
-
     lexer = Lexer()
-    txt = open('tests/testQuicksort.pl0').read()
+    txt = open('tests/badnumbers.pl0').read()
 
     # Crear una tabla para mostrar los tokens
     console = Console()
