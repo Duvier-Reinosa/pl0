@@ -4,7 +4,6 @@ topdown.py
 Analizador descendente recursivo.
 '''
 from dataclasses import dataclass
-from model import *
 
 import re
 
