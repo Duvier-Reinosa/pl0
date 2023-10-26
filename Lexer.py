@@ -1,14 +1,12 @@
 import sly
-from rich.console import Console
-from rich.table import Table
 
 class Lexer(sly.Lexer):
     tokens = {
         # Palabras Reservadas
-        'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT',
+        'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT', 'FOR',  # Agregamos 'FOR' como palabra reservada
 
         # Literales
-        'ICONST', 'RCONST', 'SCONST','IDENT',
+        'ICONST', 'RCONST', 'SCONST', 'IDENT',
 
         # Operadores y símbolos
         'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET'
@@ -43,6 +41,10 @@ class Lexer(sly.Lexer):
     LBRACKET = r'\['
     RBRACKET = r'\]'
 
+
+    # Palabras reservadas
+    FOR = r'for'  # Agregamos el token 'FOR'
+
     # Literales
     SCONST = r'"[^"]*"'
     IDENT = r'[a-zA-Z][a-zA-Z0-9]*'
@@ -65,26 +67,3 @@ class Lexer(sly.Lexer):
     def error(self, t):
         print(f"Caracter ilegal '{t.value[0]}' en la línea {self.lineno}")
         self.index += 1
-
-if __name__ == '__main__':
-    lexer = Lexer()
-    txt = open('tests/badnumbers.pl0').read()
-
-    # Crear una tabla para mostrar los tokens
-    console = Console()
-    table = Table(title="Tokens")
-    table.add_column("Token", justify="center")
-    table.add_column("Valor", justify="center")
-    table.add_column("Línea", justify="center")
-
-    for tok in lexer.tokenize(txt):
-        # Agregar cada token a la tabla
-        table.add_row(tok.type, str(tok.value), str(tok.lineno))
-
-    # Imprimir la tabla usando rich
-    console.print(table)
-
-
-
-
-

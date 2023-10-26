@@ -1,0 +1,74 @@
+program ::= function-declaration+
+
+function-declaration ::= "fun" IDENT "(" arguments ")" "locals" local-variables "begin" statements "end"
+
+arguments ::= argument-list | ε
+
+argument-list ::= identifier ":" data-type ("," identifier ":" data-type)*
+
+local-variables ::= variable-declaration (";" variable-declaration)* | ε
+
+variable-declaration ::= identifier ":" data-type
+
+statements ::= statement (";" statement)* | ε
+
+statement ::= assignment-statement
+          | while-statement
+          | if-statement
+          | print-statement
+          | write-statement
+          | read-statement
+          | return-statement
+          | function-call-statement
+          | for-statement  # Agregamos el bucle "for" a la gramática
+          | "skip"
+          | "break"
+          | block
+
+assignment-statement ::= identifier ":=" expression
+
+while-statement ::= "while" expression "do" statement
+
+if-statement ::= "if" "(" expression ")" "then" statement ("else" statement)?
+
+print-statement ::= "print" "(" expression-list ")"
+
+write-statement ::= "write" "(" expression ")"
+
+read-statement ::= "read" "(" identifier ")"
+
+return-statement ::= "return" expression
+
+function-call-statement ::= identifier "(" (expression ("," expression)*)? ")"
+
+for-statement ::= "for" "(" assignment-statement ";" expression ";" assignment-statement ")" statement  # Regla para el bucle "for"
+
+block ::= "begin" statements "end"
+
+data-type ::= "int" | "float"
+
+expression-list ::= expression ("," expression)*
+
+expression ::= arithmetic-expression
+          | relational-expression
+          | "-" expression
+          | "+" expression
+          | "(" expression ")"
+          | identifier
+          | number
+
+arithmetic-expression ::= expression ("+" | "-" | "*" | "/") expression
+
+relational-expression ::= expression ("<" | "<=" | ">" | ">=" | "==" | "!=") expression
+
+identifier ::= letter (letter | digit)*
+
+number ::= integer | floating-point
+
+integer ::= digit+
+
+floating-point ::= digit+ "." digit+
+
+letter ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+
+digit ::= "0" | "1" | ... | "9"
