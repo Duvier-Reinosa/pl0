@@ -3,10 +3,10 @@ import sly
 class Lexer(sly.Lexer):
     tokens = {
         # Palabras Reservadas
-        'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT', 'FOR',  # Agregamos 'FOR' como palabra reservada
+        'program', 'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT', 'FOR',  # Agregamos 'FOR' como palabra reservada
 
         # Literales
-        'ICONST', 'RCONST', 'SCONST', 'IDENT',
+        'ICONST', 'RCONST', 'SCONST', 'IDENTIFIER',
 
         # Operadores y símbolos
         'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET'
@@ -44,10 +44,11 @@ class Lexer(sly.Lexer):
 
     # Palabras reservadas
     FOR = r'for'  # Agregamos el token 'FOR'
+    program = r'program'
 
     # Literales
     SCONST = r'"[^"]*"'
-    IDENT = r'[a-zA-Z][a-zA-Z0-9]*'
+    IDENTIFIER = r'[a-zA-Z][a-zA-Z0-9]*'
 
     @_(r'\d+\.\d*')
     def RCONST(self, t):

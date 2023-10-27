@@ -1,13 +1,20 @@
+from dataclasses import dataclass
+import Visitor
+
+@dataclass
 class Node:
-    pass
+  def accept(self, v:Visitor.Visitor(), *args, **kwargs):
+    return v.visit(self, *args, **kwargs)
 
+@dataclass
 class Program(Node):
-    def __init__(self, function_declarations):
-        self.function_declarations = function_declarations
+    def accept(self, v: Visitor.Visitor(), *args, **kwargs):
+        return v.visit(self, *args, **kwargs)
 
-class FunctionDeclaration(Node):
-    def __init__(self, name, arguments, local_variables, statements):
-        self.name = name
-        self.arguments = arguments
-        self.local_variables = local_variables
-        self.statements = statements
+# @dataclass
+# class FunctionDeclaration(Node):
+#     def __init__(self, name, arguments, local_variables, statements):
+#         self.name = name
+#         self.arguments = arguments
+#         self.local_variables = local_variables
+#         self.statements = statements

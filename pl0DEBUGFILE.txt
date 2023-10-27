@@ -1,0 +1,116 @@
+Grammar:
+
+Rule 0     S' -> programDefinition
+Rule 1     programDefinition -> program IDENTIFIER
+
+Unused terminals:
+
+    RETURN
+    SKIP
+    READ
+    END
+    FUN
+    ASSIGN
+    LT
+    LBRACKET
+    BREAK
+    NE
+    PRINT
+    ICONST
+    RPAREN
+    IF
+    BEGIN
+    THEN
+    INT
+    COMMA
+    TIMES
+    DIVIDE
+    WRITE
+    FOR
+    LE
+    GT
+    COLON
+    RCONST
+    RBRACKET
+    GE
+    ELSE
+    SEMICOLON
+    LPAREN
+    MINUS
+    PLUS
+    FLOAT
+    LOCALS
+    EQ
+    SCONST
+
+Terminals, with rules where they appear:
+
+ASSIGN               : 
+BEGIN                : 
+BREAK                : 
+COLON                : 
+COMMA                : 
+DIVIDE               : 
+ELSE                 : 
+END                  : 
+EQ                   : 
+FLOAT                : 
+FOR                  : 
+FUN                  : 
+GE                   : 
+GT                   : 
+ICONST               : 
+IDENTIFIER           : 1
+IF                   : 
+INT                  : 
+LBRACKET             : 
+LE                   : 
+LOCALS               : 
+LPAREN               : 
+LT                   : 
+MINUS                : 
+NE                   : 
+PLUS                 : 
+PRINT                : 
+RBRACKET             : 
+RCONST               : 
+READ                 : 
+RETURN               : 
+RPAREN               : 
+SCONST               : 
+SEMICOLON            : 
+SKIP                 : 
+THEN                 : 
+TIMES                : 
+WRITE                : 
+error                : 
+program              : 1
+
+Nonterminals, with rules where they appear:
+
+programDefinition    : 0
+
+
+state 0
+
+    (0) S' -> . programDefinition
+    (1) programDefinition -> . program IDENTIFIER
+    program         shift and go to state 2
+
+    programDefinition              shift and go to state 1
+
+state 1
+
+    (0) S' -> programDefinition .
+
+
+state 2
+
+    (1) programDefinition -> program . IDENTIFIER
+    IDENTIFIER      shift and go to state 3
+
+
+state 3
+
+    (1) programDefinition -> program IDENTIFIER .
+    $end            reduce using rule 1 (programDefinition -> program IDENTIFIER .)
