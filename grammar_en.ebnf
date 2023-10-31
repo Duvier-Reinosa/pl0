@@ -1,74 +1,81 @@
-program ::= function-declaration+
+program ::= funclist
 
-function-declaration ::= "fun" IDENT "(" arguments ")" "locals" local-variables "begin" statements "end"
+funclist ::= funclist function
+    | function
 
-arguments ::= argument-list | ε
+function ::= 'FUN' 'IDENT' parmlist varlist 'BEGIN' statements 'END'
 
-argument-list ::= identifier ":" data-type ("," identifier ":" data-type)*
+varlist ::= decllist optsemi
+    | 
 
-local-variables ::= variable-declaration (";" variable-declaration)* | ε
+optsemi ::= ';'
+    |
 
-variable-declaration ::= identifier ":" data-type
+decllist ::= decllist ';' vardecl
+    | vardecl
 
-statements ::= statement (";" statement)* | ε
+vardecl ::= parm 
+    | function
 
-statement ::= assignment-statement
-          | while-statement
-          | if-statement
-          | print-statement
-          | write-statement
-          | read-statement
-          | return-statement
-          | function-call-statement
-          | for-statement  # Agregamos el bucle "for" a la gramática
-          | "skip"
-          | "break"
-          | block
+parmlist ::= '(' parmlistitems ')'
+    | '(' ')'
 
-assignment-statement ::= identifier ":=" expression
+parmlistitems ::= parmlistitems ',' parm
+    | parm
 
-while-statement ::= "while" expression "do" statement
+parm ::= 'IDENT' ':' typename
 
-if-statement ::= "if" "(" expression ")" "then" statement ("else" statement)?
+typename ::= 'INT'
+    | 'FLOAT'
+    | 'INT' '[' expr ']'
+    | 'FLOAT' '[' expr ']'
 
-print-statement ::= "print" "(" expression-list ")"
+statements ::= statements ';' statement
+    | statement
 
-write-statement ::= "write" "(" expression ")"
+statement ::= 'PRINT' '(' 'STRING' ')'
+    | 'WRITE' '(' expr ')'
+    | 'READ' '(' location ')'
+    | 'WHILE' relop DO statement
+    | 'BREAK'
+    | 'IF' relop 'THEN' statement 
+    | 'IF' relop 'THEN' statement 'ELSE' statement
+    | 'BEGIN' statements 'END'
+    | location ':=' expr
+    | 'RETURN' expr
+    | 'SKIP'
+    | 'IDENT' '(' exprlist ')'
 
-read-statement ::= "read" "(" identifier ")"
+location ::= 'IDENT'
+    | 'IDENT' '[' expr ']'
 
-return-statement ::= "return" expression
+exprlist ::= exprlistitems
+    |
 
-function-call-statement ::= identifier "(" (expression ("," expression)*)? ")"
+exprlistitems ::= exprlistitems ',' expr
+    | expr
 
-for-statement ::= "for" "(" assignment-statement ";" expression ";" assignment-statement ")" statement  # Regla para el bucle "for"
+expr ::= expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | '-' expr
+    | '+' expr
+    | '(' expr ')'
+    | 'IDENT' '[' expr ']'
+    | 'INUMBER'
+    | 'FNUMBER'
+    | 'IDENT' '(' exprlist ')'
+    | 'IDENT'
+    | 'INT' '(' expr ')'
+    | 'FLOAT' '(' expr ')'
 
-block ::= "begin" statements "end"
-
-data-type ::= "int" | "float"
-
-expression-list ::= expression ("," expression)*
-
-expression ::= arithmetic-expression
-          | relational-expression
-          | "-" expression
-          | "+" expression
-          | "(" expression ")"
-          | identifier
-          | number
-
-arithmetic-expression ::= expression ("+" | "-" | "*" | "/") expression
-
-relational-expression ::= expression ("<" | "<=" | ">" | ">=" | "==" | "!=") expression
-
-identifier ::= letter (letter | digit)*
-
-number ::= integer | floating-point
-
-integer ::= digit+
-
-floating-point ::= digit+ "." digit+
-
-letter ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
-
-digit ::= "0" | "1" | ... | "9"
+relop ::= expr 'LT' expr
+    | expr 'LE' expr
+    | expr 'GT' expr
+    | expr 'GE' expr
+    | expr 'EQ' expr
+    | expr 'NE' expr
+    | relop 'AND' relop
+    | relop 'OR' relop
+    | 'NOT' relop

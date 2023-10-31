@@ -1,46 +1,46 @@
 Grammar:
 
 Rule 0     S' -> programDefinition
-Rule 1     programDefinition -> program IDENTIFIER SEMICOLON
+Rule 1     programDefinition -> program IDENTIFIER SEMICOLON NEWLINE
 
 Unused terminals:
 
-    BREAK
-    BEGIN
-    RETURN
-    ICONST
+    LPAREN
     RBRACKET
-    GT
-    THEN
-    FUN
-    RPAREN
-    PLUS
-    DIVIDE
-    INT
-    EQ
-    ASSIGN
-    SKIP
-    NE
-    PRINT
-    WRITE
-    COMMA
-    MINUS
-    READ
-    LT
-    SCONST
-    FOR
+    COLON
     ELSE
     LBRACKET
-    TIMES
-    FLOAT
-    END
-    COLON
-    LOCALS
-    RCONST
-    IF
-    LPAREN
+    PLUS
+    SKIP
     LE
+    PRINT
+    IF
+    BREAK
+    ICONST
+    WRITE
+    LOCALS
+    NE
+    RETURN
+    INT
+    LT
+    BEGIN
+    EQ
+    TIMES
     GE
+    ASSIGN
+    FUN
+    FOR
+    READ
+    END
+    GT
+    COMMA
+    RCONST
+    RPAREN
+    MINUS
+    FLOAT
+    THEN
+    DIVIDE
+    SCONST
 
 Terminals, with rules where they appear:
 
@@ -69,6 +69,7 @@ LPAREN               :
 LT                   : 
 MINUS                : 
 NE                   : 
+NEWLINE              : 1
 PLUS                 : 
 PRINT                : 
 RBRACKET             : 
@@ -93,7 +94,7 @@ programDefinition    : 0
 state 0
 
     (0) S' -> . programDefinition
-    (1) programDefinition -> . program IDENTIFIER SEMICOLON
+    (1) programDefinition -> . program IDENTIFIER SEMICOLON NEWLINE
     program         shift and go to state 2
 
     programDefinition              shift and go to state 1
@@ -105,17 +106,23 @@ state 1
 
 state 2
 
-    (1) programDefinition -> program . IDENTIFIER SEMICOLON
+    (1) programDefinition -> program . IDENTIFIER SEMICOLON NEWLINE
     IDENTIFIER      shift and go to state 3
 
 
 state 3
 
-    (1) programDefinition -> program IDENTIFIER . SEMICOLON
+    (1) programDefinition -> program IDENTIFIER . SEMICOLON NEWLINE
     SEMICOLON       shift and go to state 4
 
 
 state 4
 
-    (1) programDefinition -> program IDENTIFIER SEMICOLON .
-    $end            reduce using rule 1 (programDefinition -> program IDENTIFIER SEMICOLON .)
+    (1) programDefinition -> program IDENTIFIER SEMICOLON . NEWLINE
+    NEWLINE         shift and go to state 5
+
+
+state 5
+
+    (1) programDefinition -> program IDENTIFIER SEMICOLON NEWLINE .
+    $end            reduce using rule 1 (programDefinition -> program IDENTIFIER SEMICOLON NEWLINE .)

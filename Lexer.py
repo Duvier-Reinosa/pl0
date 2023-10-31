@@ -9,10 +9,12 @@ class Lexer(sly.Lexer):
         'ICONST', 'RCONST', 'SCONST', 'IDENTIFIER',
 
         # Operadores y símbolos
-        'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET'
+        'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET',
+        'NEWLINE'  # Agregamos el token NEWLINE
     }
 
     # Ignora espacios en blanco y comentarios
+    NEWLINE = r'\n'  # Agregamos el token NEWLINE
     ignore = ' \t\r'
     ignore_comment = r'\#.*'
 
@@ -48,7 +50,6 @@ class Lexer(sly.Lexer):
     NE = r'!='
     LBRACKET = r'\['
     RBRACKET = r'\]'
-
 
     @_(r'\d+\.\d*')
     def RCONST(self, t):

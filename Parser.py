@@ -7,6 +7,9 @@ class Parser(sly.Parser):
   
     tokens = Lexer.Lexer.tokens
 
-    @_("program IDENTIFIER SEMICOLON")
+    @_("program IDENTIFIER SEMICOLON NEWLINE")
     def programDefinition(self, p):
         return AstNodes.Program(p.IDENTIFIER)
+    
+    
+
