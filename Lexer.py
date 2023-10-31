@@ -20,6 +20,14 @@ class Lexer(sly.Lexer):
 
     def __init__(self):
         self.lineno = 1  # Variable para mantener el número de línea actual
+    
+    # Palabras reservadas
+    FOR = r'for'  # Agregamos el token 'FOR'
+    program = r'program'
+
+    # Literales
+    SCONST = r'"[^"]*"'
+    IDENTIFIER = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
     # Expresiones regulares para los tokens
     PLUS = r'\+'
@@ -41,14 +49,6 @@ class Lexer(sly.Lexer):
     LBRACKET = r'\['
     RBRACKET = r'\]'
 
-
-    # Palabras reservadas
-    FOR = r'for'  # Agregamos el token 'FOR'
-    program = r'program'
-
-    # Literales
-    SCONST = r'"[^"]*"'
-    IDENTIFIER = r'[a-zA-Z][a-zA-Z0-9]*'
 
     @_(r'\d+\.\d*')
     def RCONST(self, t):

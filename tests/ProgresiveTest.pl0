@@ -1,1 +1,12 @@
 program Pi_Spigot;
+var n, len, i, j, k, q, x, nines, predigit : int;
+a : array[1..len] of int;
+fun multiply(a int, b int) locals result int begin
+    result := 0;
+    while b > 0 do begin
+        if b % 2 = 1 then result := result + a;
+        a := a * 2;
+        b := b / 2;
+    end;
+    return result;
+end

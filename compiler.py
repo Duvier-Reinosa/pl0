@@ -1,10 +1,12 @@
 from rich.console import Console
 from rich.table import Table
+from rich import print
 from dataclasses import dataclass
 
 # Class imports
 from Lexer import Lexer
 from Parser import Parser
+from Dot import Dot
 # from Visitor import Visitor
 
 
@@ -18,19 +20,22 @@ if __name__ == '__main__':
 
     txt = open('tests/ProgresiveTest.pl0').read()
     tokenized = lexer.tokenize(txt)
+    ast = parser.parse(tokenized)
 
-    # Crear una tabla para mostrar los tokens
-    console = Console()
-    table = Table(title="Tokens")
-    table.add_column("Token", justify="center")
-    table.add_column("Valor", justify="center")
-    table.add_column("Línea", justify="center")
+    dot = Dot.render(ast)
+    print(dot)
 
-    for tok in tokenized:
-        # Agregar cada token a la tabla
-        table.add_row(tok.type, str(tok.value), str(tok.lineno))
+    # # Crear una tabla para mostrar los tokens
+    # console = Console()
+    # table = Table(title="Tokens")
+    # table.add_column("Token", justify="center")
+    # table.add_column("Valor", justify="center")
+    # table.add_column("Línea", justify="center")
 
-    # Imprimir la tabla usando rich
-    console.print(table)
+    # for tok in tokenized:
+    #     # Agregar cada token a la tabla
+    #     table.add_row(tok.type, str(tok.value), str(tok.lineno))
 
-    print(parser.parse(tokenized))
+    # # Imprimir la tabla usando rich
+    # console.print(table)
+

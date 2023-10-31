@@ -1,47 +1,46 @@
 Grammar:
 
 Rule 0     S' -> programDefinition
-Rule 1     programDefinition -> program IDENTIFIER
+Rule 1     programDefinition -> program IDENTIFIER SEMICOLON
 
 Unused terminals:
 
-    RETURN
-    SKIP
-    READ
-    END
-    FUN
-    ASSIGN
-    LT
-    LBRACKET
     BREAK
+    BEGIN
+    RETURN
+    ICONST
+    RBRACKET
+    GT
+    THEN
+    FUN
+    RPAREN
+    PLUS
+    DIVIDE
+    INT
+    EQ
+    ASSIGN
+    SKIP
     NE
     PRINT
-    ICONST
-    RPAREN
-    IF
-    BEGIN
-    THEN
-    INT
-    COMMA
-    TIMES
-    DIVIDE
     WRITE
-    FOR
-    LE
-    GT
-    COLON
-    RCONST
-    RBRACKET
-    GE
-    ELSE
-    SEMICOLON
-    LPAREN
+    COMMA
     MINUS
-    PLUS
-    FLOAT
-    LOCALS
-    EQ
+    READ
+    LT
     SCONST
+    FOR
+    ELSE
+    LBRACKET
+    TIMES
+    FLOAT
+    END
+    COLON
+    LOCALS
+    RCONST
+    IF
+    LPAREN
+    LE
+    GE
 
 Terminals, with rules where they appear:
 
@@ -78,7 +77,7 @@ READ                 :
 RETURN               : 
 RPAREN               : 
 SCONST               : 
-SEMICOLON            : 
+SEMICOLON            : 1
 SKIP                 : 
 THEN                 : 
 TIMES                : 
@@ -94,7 +93,7 @@ programDefinition    : 0
 state 0
 
     (0) S' -> . programDefinition
-    (1) programDefinition -> . program IDENTIFIER
+    (1) programDefinition -> . program IDENTIFIER SEMICOLON
     program         shift and go to state 2
 
     programDefinition              shift and go to state 1
@@ -106,11 +105,17 @@ state 1
 
 state 2
 
-    (1) programDefinition -> program . IDENTIFIER
+    (1) programDefinition -> program . IDENTIFIER SEMICOLON
     IDENTIFIER      shift and go to state 3
 
 
 state 3
 
-    (1) programDefinition -> program IDENTIFIER .
-    $end            reduce using rule 1 (programDefinition -> program IDENTIFIER .)
+    (1) programDefinition -> program IDENTIFIER . SEMICOLON
+    SEMICOLON       shift and go to state 4
+
+
+state 4
+
+    (1) programDefinition -> program IDENTIFIER SEMICOLON .
+    $end            reduce using rule 1 (programDefinition -> program IDENTIFIER SEMICOLON .)

@@ -3,12 +3,13 @@ import Visitor
 
 @dataclass
 class Node:
-  def accept(self, v:Visitor.Visitor(), *args, **kwargs):
+  def accept(self, v:Visitor.Visitor, *args, **kwargs):
     return v.visit(self, *args, **kwargs)
 
 @dataclass
 class Program(Node):
-    def accept(self, v: Visitor.Visitor(), *args, **kwargs):
+    name: str
+    def accept(self, v: Visitor.Visitor, *args, **kwargs):
         return v.visit(self, *args, **kwargs)
 
 # @dataclass
