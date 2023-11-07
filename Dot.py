@@ -40,30 +40,61 @@ class Dot():
     self.dot.node('Program', label=f'Program\nName: {n.name}')
     return
   
-  # def visit(self, n:Number):
-  #   name = self.name()
-  #   self.dot.node(name, label=f'{n.value}')
-  #   return name
+  def visit(self, n: FuncList):
+    self.dot.node('FuncList', label=f'FuncList')
+    for func in n.functions:
+      func.accept(self)
+    return
   
-  # def visit(self, n:Binary):
-  #   name = self.name()
-  #   left  = n.left.accept(self)
-  #   right = n.right.accept(self)
-  #   self.dot.node(name, label=f'{n.op}', shape='circle', color='bisque')
-  #   self.dot.edge(name, left)
-  #   self.dot.edge(name, right)
-  #   return name
+  def visit(self, n: Function):
+    name = self.name()
+    self.dot.node(name, label=f'Function\nName: {n.name}')
+    n.parmlist.accept(self)
+    n.varlist.accept(self)
+    n.statements.accept(self)
+    self.dot.edge('FuncList', name)
+    return
   
-  # def visit(self, n:Assignment):
-  #   name = self.name()
-  #   self.dot.node(name, label=f'Assignment\nVariable: {n.variable}')
-  #   expr_name = n.expr.accept(self)
-  #   self.dot.edge(name, expr_name)
-  #   return name
+  def visit(self, n: ParmList):
+    self.dot.node('ParmList', label=f'ParmList')
+    for parm in n.parms:
+      parm.accept(self)
+    return
+  
+  def visit(self, n: Parm):
+    name = self.name()
+    self.dot.node(name, label=f'Parm\nName: {n.name}\nType: {n.typename}')
+    self.dot.edge('ParmList', name)
+    return
+  
+  def visit(self, n: VarList):
+    self.dot.node('VarList', label=f'VarList')
+    n.decllist.accept(self)
+    return
+  
+  def visit(self, n: DeclList):
+    self.dot.node('DeclList', label=f'DeclList')
+    for decl in n.decls:
+      decl.accept(self)
+    return
+  
+  def visit(self, n: Decl):
+    name = self.name()
+    self.dot.node(name, label=f'Decl\nName: {n.parm.name}\nType: {n.parm.typename}')
+    self.dot.edge('DeclList', name)
+    return
+  
+  def visit(self, n: Statements):
+    self.dot.node('Statements', label=f'Statements')
+    for statement in n.statements:
+      statement.accept(self)
+    return
+  
+  def visit(self, n: Statement):
+    name = self.name()
+    self.dot.node(name, label=f'Statement\n{str(n.statement)}')
+    self.dot.edge('Statements', name)
+    return
 
-  # def visit(self, n:FunctionCall):
-  #   name = self.name()
-  #   self.dot.node(name, label=f'FunctionCall\nFunction: {n.func_name}')
-  #   expr_name = n.expr.accept(self)
-  #   self.dot.edge(name, expr_name)
-  #   return name
+  
+  

@@ -5,42 +5,42 @@ Rule 1     programDefinition -> program IDENTIFIER SEMICOLON NEWLINE
 
 Unused terminals:
 
-    LPAREN
+    ASSIGN
     RBRACKET
-    COLON
-    ELSE
-    LBRACKET
-    PLUS
-    SKIP
-    LE
-    PRINT
-    IF
-    BREAK
-    ICONST
-    WRITE
+    THEN
+    GE
+    RCONST
+    DIVIDE
     LOCALS
     NE
-    RETURN
-    INT
-    LT
-    BEGIN
-    EQ
-    TIMES
-    GE
-    ASSIGN
-    FUN
-    FOR
-    READ
-    END
-    GT
-    COMMA
-    RCONST
-    RPAREN
+    LPAREN
+    COLON
     MINUS
     FLOAT
-    THEN
-    DIVIDE
+    BREAK
+    BEGIN
+    LT
+    FOR
+    INT
+    PLUS
+    READ
+    GT
+    COMMA
+    IF
+    END
+    RETURN
+    LE
+    ICONST
+    PRINT
+    ELSE
+    TIMES
+    LBRACKET
+    WRITE
+    RPAREN
+    FUN
     SCONST
+    SKIP
+    EQ
 
 Terminals, with rules where they appear:
 
