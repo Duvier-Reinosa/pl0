@@ -1,459 +1,249 @@
 from dataclasses import dataclass
-import Visitor
+from Visitor import Visitor
+from typing import Union, Optional, List
 
-@dataclass
+
 class Node:
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+    def accept(self, visitor, *args, **kwargs):
+        # Redirecciona a los métodos específicos basado en el tipo del nodo
+        method_name = 'visit_' + type(self).__name__
+        visitor_method = getattr(visitor, method_name, self.generic_visit)
+        return visitor_method(self, *args, **kwargs)
 
+    def generic_visit(self, visitor, *args, **kwargs):
+        raise Exception(f'No visit_{type(self).__name__} method in {type(visitor).__name__}')
+
+
+# Nodo para un programa completo
 @dataclass
 class Program(Node):
-    name: str
-    funclist: "FuncList"  # Representa la lista de funciones
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+    functions: list  # Lista de nodos Function
+    def accept(self, visitor, *args, **kwargs):
+        return visitor.visit_Program(self, *args, **kwargs)
 
-@dataclass
-class FuncList(Node):
-    functions: list  # Lista de funciones
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-
+# Nodo para una función
 @dataclass
 class Function(Node):
     name: str
-    parmlist: "ParmList"  # Representa la lista de parámetros
-    varlist: "VarList"    # Representa la lista de variables locales
-    statements: "Statements"  # Representa el cuerpo de la función
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+    parameters: list  # Lista de nodos Parameter
+    var_declarations: list  # Lista de nodos VarDeclaration
+    statements: list  # Lista de nodos Statement
+
+# Nodo para declaraciones de variables
+@dataclass
+class VarDeclaration(Node):
+    var_name: str
+    var_type: str
+    array_size: Node  # Nodo Expression si es un arreglo, None si no lo es
+
+# Nodo para parámetros de función
+@dataclass
+class Parameter(Node):
+    param_name: str
+    param_type: str
 
 @dataclass
-class ParmList(Node):
-    parms: list  # Lista de parámetros
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+class ReadStatement(Node):
+    location: Node  # Suponiendo que 'Node' es la clase base de tus nodos AST
 
+    def __init__(self, location):
+        self.location = location
+
+    def __repr__(self):
+        return f"ReadStatement(location={self.location})"
+
+# Nodo para los tipos de datos
 @dataclass
-class VarList(Node):
-    decllist: "DeclList"  # Representa la lista de declaraciones
-    optsemi: str  # Representa la opción de punto y coma
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+class TypeName(Node):
+    type_name: str
+    array_size: Optional[Node] = None  # Añade esto si necesitas almacenar el tamaño del array
 
-@dataclass
-class DeclList(Node):
-    decls: list  # Lista de declaraciones
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
+    def __repr__(self):
+        if self.array_size:
+            return f"TypeName({self.type_name}, array_size={self.array_size})"
+        else:
+            return f"TypeName({self.type_name})"
 
-@dataclass
-class Decl(Node):
-    parm: "Parm"  # Representa una declaración de parámetro
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
 
-@dataclass
-class Parm(Node):
-    name: str
-    typename: str  # Representa el tipo de parámetro (INT, FLOAT, ARRAY, etc.)
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-
-@dataclass
-class Statements(Node):
-    statements: list  # Lista de declaraciones
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-
+# Nodo para las declaraciones (statements)
 @dataclass
 class Statement(Node):
-    statement: str  # Representa una declaración
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-    # hasme los nodos que nos hicieron falta en el parser
+    # Esta clase podría ser abstracta y servir como base para diferentes tipos de statements
+    pass
+
+# Ejemplos de nodos para diferentes tipos de statements
+@dataclass
+class PrintStatement(Statement):
+    value: Node  # Nodo Expression
 
 @dataclass
-class Assign(Node):
-    name: str
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
+class AssignmentStatement(Statement):
+    left: Node  # Nodo Location
+    right: Node  # Nodo Expression
+
 @dataclass
-class If(Node):
-    expr: "Expression"
-    statements: "Statements"
-    else_statements: "Statements"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class While(Node):
-    expr: "Expression"
-    statements: "Statements"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class For(Node):
-    name: str
-    expr: "Expression"
-    statements: "Statements"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class Print(Node):
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class Read(Node):
-    name: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class Return(Node):
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
+class IfStatement(Statement):
+    condition: Node  # Nodo Expression
+    then_block: list  # Lista de nodos Statement
+    else_block: list  # Lista de nodos Statement (opcional)
+
+# ... otros tipos de statements ...
+
+# Nodo para expresiones
 @dataclass
 class Expression(Node):
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
+    # Similar a Statement, esta clase podría ser una base para diferentes tipos de expresiones
+    pass
+
+# Ejemplos de nodos para diferentes tipos de expresiones
 @dataclass
-class ExpressionList(Node):
-    exprlist: list
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-# Expresiones
+class BinaryExpression(Expression):
+    left: Node
+    operator: str
+    right: Node
 
 @dataclass
-class Number(Expression):
-    value: int
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
+class UnaryExpression(Expression):
+    operator: str
+    operand: Node
+
 @dataclass
-class String(Expression):
+class LiteralExpression(Expression):
     value: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-@dataclass
-class Boolean(Expression):
-    value: bool
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
 
 @dataclass
-class Binary(Expression):
-    op: str
+class VariableExpression(Expression):
+    var_name: str
+
+from dataclasses import dataclass
+import Visitor
+
+@dataclass
+class Expression(Node):
+    pass
+
+# Expresiones binarias (como suma, resta, multiplicación, división)
+@dataclass
+class BinaryExpression(Expression):
     left: Expression
+    operator: str
     right: Expression
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-# Funciones
 
+# Expresiones unarias (como negación)
 @dataclass
-class FunctionCall(Expression):
-    func_name: str
-    exprlist: "ExpressionList"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+class UnaryExpression(Expression):
+    operator: str
+    operand: Expression
 
+# Expresiones literales (números enteros, números flotantes)
 @dataclass
-class Array(Expression):
-    array: list
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+class LiteralExpression(Expression):
+    value: str  # Puede ser 'INUMBER' o 'FNUMBER'
 
+# Identificadores (variables)
 @dataclass
-class ArrayAccess(Expression):
+class IdentifierExpression(Expression):
     name: str
-    index: int
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
 
-@dataclass
-class ArrayAssign(Expression):
-    name: str
-    index: int
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-@dataclass
-class ArrayAssignList(Expression):
-    name: str
-    exprlist: "ExpressionList"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-# Otros
-
-@dataclass
-class PrintString(Expression):
-    value: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-@dataclass
-class PrintExpression(Expression):
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-@dataclass
-class PrintExpressionList(Expression):
-    exprlist: "ExpressionList"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-@dataclass
-class ReadExpression(Expression):
-    name: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-# @dataclass
-# class ReadExpressionList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-
-# =====================================================================
-
-@dataclass
-class ReadString(Expression):
-    value: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
-
-# @dataclass
-# class ReadStringList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-
-# =====================================================================
-
+# Expresiones de llamada a función
 @dataclass
 class FunctionCallExpression(Expression):
-    func_name: str
-    exprlist: "ExpressionList"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+    function_name: str
+    arguments: list  # Lista de Expression
 
-# @dataclass
-# class FunctionCallExpressionList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+# Expresiones de acceso a arreglo
+@dataclass
+class ArrayAccessExpression(Expression):
+    array_name: str
+    index: Expression
 
-# =====================================================================
+# Expresiones de tipo (para conversiones de tipo)
+@dataclass
+class TypeExpression(Expression):
+    type_name: str
+    expression: Expression
+
+# Expresiones relacionales (como <, <=, >, >=, ==, !=)
+@dataclass
+class RelationalExpression(Expression):
+    left: Expression
+    operator: str
+    right: Expression
+
+# Expresiones lógicas (AND, OR)
+@dataclass
+class LogicalExpression(Expression):
+    left: Expression
+    operator: str
+    right: Expression
+
+# Expresión NOT
+@dataclass
+class NotExpression(Expression):
+    expression: Expression
+
+
+# Nodo para ubicaciones (locations)
+@dataclass
+class Location(Node):
+    var_name: str
+    index: Node  # Nodo Expression si es un arreglo, None si no lo es
 
 @dataclass
-class FunctionCallString(Expression):
-    func_name: str
-    value: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+class NumberLiteral(Node):
+    value: Union[int, float]
 
-# @dataclass
-# class FunctionCallStringList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-
-# =====================================================================
+    def __repr__(self):
+        return f"NumberLiteral({self.value})"
 
 @dataclass
-class FunctionCallExpressionList(Expression):
-    func_name: str
-    exprlist: "ExpressionList"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+class BlockStatement(Node):
+    statements: List[Node]
 
-# @dataclass
-# class FunctionCallExpressionListList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+    def __repr__(self):
+        return f"BlockStatement({self.statements})"
 
-# =====================================================================
-
-# @dataclass
-# class FunctionCallStringListList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-
-# =====================================================================
 
 @dataclass
-class FunctionCallStringList(Expression):
-    func_name: str
-    exprlist: "ExpressionList"
-    value: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# =====================================================================
+class WhileStatement(Node):
+    condition: Node   # La condición del bucle while
+    body: Node        # El cuerpo del bucle while
 
-# TypeName, OptSemi, Location, ExprList, Unary, Identifier, Cast, Unary
-
-# =====================================================================
-# =====================================================================
+    def __repr__(self):
+        return f"WhileStatement(condition={self.condition}, body={self.body})"
 
 @dataclass
-class TypeName(Expression):
-    typename: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# @dataclass
-# class TypeNameList(Expression):
-#     typename: str
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+class ReturnStatement(Node):
+    expression: Optional[Expression]  # La expresión que se retorna
 
-# =====================================================================
+    def __init__(self, expression: Optional[Expression] = None):
+        self.expression = expression
+
+    def __repr__(self):
+        return f"ReturnStatement(expression={self.expression})"
+
+
 
 @dataclass
-class OptSemi(Expression):
-    optsemi: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# @dataclass
-# class OptSemiList(Expression):
-#     optsemi: str
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+class FunctionCall(Node):
+    function_name: str
+    arguments: List[Expression]
 
-# =====================================================================
+    def __repr__(self):
+        return f"FunctionCall(function_name={self.function_name}, arguments={self.arguments})"
 
 @dataclass
-class Location(Expression):
-    name: str
-    index: int
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# @dataclass
-# class LocationList(Expression):
-#     name: str
-#     index: int
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+class WriteStatement(Node):
+    expression: Expression  # La expresión cuyo valor se va a escribir
 
-# =====================================================================
+    def __repr__(self):
+        return f"WriteStatement(expression={self.expression})"
 
-# @dataclass
-# class ExprList(Expression):
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-#
 
-# =====================================================================
 
 @dataclass
-class Unary(Expression):
-    op: str
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# @dataclass
-# class UnaryList(Expression):
-#     op: str
-#     expr: "Expression"
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
+class ReturnStatement(Node):
+    expr: Expression  # La expresión que se retorna
 
-# =====================================================================
-
-@dataclass
-class Identifier(Expression):
-    name: str
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-# @dataclass  
-# class IdentifierList(Expression):
-#     name: str
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-#
-
-# =====================================================================
-
-@dataclass
-class Cast(Expression):
-    typename: str
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-
-# @dataclass
-# class CastList(Expression):
-#     typename: str
-#     expr: "Expression"
-#     exprlist: "ExpressionList"
-#     def accept(self, v: Visitor.Visitor, *args, **kwargs):
-#         return v.visit(self, *args, **kwargs)
-
-# =====================================================================
-
-@dataclass
-class UnaryMinus(Expression):
-    expr: "Expression"
-    def accept(self, v: Visitor.Visitor, *args, **kwargs):
-        return v.visit(self, *args, **kwargs)
-    
-    
+    def __repr__(self):
+        return f"ReturnStatement(expression={self.expr})"

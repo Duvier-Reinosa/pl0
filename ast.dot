@@ -1,6 +1,61 @@
-digraph AST {
-        node [color=cyan shape=box style=filled]
+digraph {
+        node [color=lightgrey shape=box style=filled]
         edge [arrowhead=none]
-        Program [label="Program
-Name: Pi_Spigot"]
+        node1 [label=Program]
+        node2 [label="Function: fact"]
+        node3 [label="Parameter: n, Type: INT"]
+        node2 -> node3
+        node4 [label=IfStatement]
+        node5 [label="RelationalExpression: =="]
+        node6 [label="VariableExpression: n"]
+        node7 [label="NumberLiteral: 1"]
+        node5 -> node6 [label=left]
+        node5 -> node7 [label=right]
+        node4 -> node5 [label=condition]
+        node8 [label=ReturnStatement]
+        node9 [label="NumberLiteral: 1"]
+        node8 -> node9
+        node4 -> node8 [label=then]
+        node10 [label=ReturnStatement]
+        node11 [label="BinaryExpression: *"]
+        node12 [label="VariableExpression: n"]
+        node13 [label="FunctionCall: fact"]
+        node14 [label="BinaryExpression: -"]
+        node15 [label="VariableExpression: n"]
+        node16 [label="NumberLiteral: 1"]
+        node14 -> node15 [label=left]
+        node14 -> node16 [label=right]
+        node13 -> node14
+        node11 -> node12 [label=left]
+        node11 -> node13 [label=right]
+        node10 -> node11
+        node4 -> node10 [label=else]
+        node2 -> node4
+        node1 -> node2
+        node17 [label="Function: main"]
+        node18 [label="Parameter: x, Type: INT"]
+        node17 -> node18
+        node19 [label="Parameter: r, Type: INT"]
+        node17 -> node19
+        node20 [label=PrintStatement]
+        node21 [label="Literal: \"Entre un numero\n\""]
+        node20 -> node21
+        node17 -> node20
+        node22 [label=ReadStatement]
+        node23 [label="VariableExpression: x"]
+        node22 -> node23 [label=location]
+        node17 -> node22
+        node24 [label=AssignmentStatement]
+        node25 [label="VariableExpression: r"]
+        node24 -> node25
+        node26 [label="FunctionCall: fact"]
+        node27 [label="VariableExpression: x"]
+        node26 -> node27
+        node24 -> node26
+        node17 -> node24
+        node28 [label=WriteStatement]
+        node29 [label="VariableExpression: r"]
+        node28 -> node29
+        node17 -> node28
+        node1 -> node17
 }

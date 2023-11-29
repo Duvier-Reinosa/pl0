@@ -1,37 +1,45 @@
 import sly
+import re
 
 class Lexer(sly.Lexer):
     tokens = {
         # Palabras Reservadas
-        'program', 'FUN', 'LOCALS', 'BEGIN', 'END', 'IF', 'THEN', 'ELSE', 'PRINT', 'WRITE', 'READ', 'RETURN', 'SKIP', 'BREAK', 'INT', 'FLOAT', 'FOR',  # Agregamos 'FOR' como palabra reservada
+        FUN, BEGIN, END, PRINT, WRITE, READ, WHILE, BREAK, IF, THEN, ELSE, RETURN, SKIP,
+        INT, FLOAT, LT, LE, GT, GE, EQ, NE, AND, OR, NOT, DO,
 
         # Literales
-        'ICONST', 'RCONST', 'SCONST', 'IDENTIFIER',
+        INUMBER, FNUMBER, STRING,
 
-        # Operadores y símbolos
-        'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN', 'COLON', 'LPAREN', 'RPAREN', 'COMMA', 'SEMICOLON', 'LT', 'LE', 'GT', 'GE', 'EQ', 'NE', 'LBRACKET', 'RBRACKET',
-        'NEWLINE'  # Agregamos el token NEWLINE
+        # Identificadores y Operadores
+        PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN, RPAREN, COMMA, SEMICOLON, LBRACKET, RBRACKET, IDENT, COLON
     }
 
-    # Ignora espacios en blanco y comentarios
-    NEWLINE = r'\n'  # Agregamos el token NEWLINE
-    ignore = ' \t\r'
-    ignore_comment = r'\#.*'
+    ignore = ' \t'
+    ignore_newline = r'\n+'
+    ignore_comment = r'(/\*([^*]|\*[^/])*\*/)|(//.*)'
 
-    literals = {'+', '-', '*', '/', ':', '=', ',', ';', '(', ')', '[', ']'}
+    literals = {'+', '-', '*', '/', '=', ',', ';', '(', ')', '[', ']'}
 
-    def __init__(self):
-        self.lineno = 1  # Variable para mantener el número de línea actual
-    
     # Palabras reservadas
-    FOR = r'for'  # Agregamos el token 'FOR'
-    program = r'program'
+    FUN = r'\bfun\b|\bFUN\b'
+    BEGIN = r'\bbegin\b|\bBEGIN\b'
+    END = r'\bend\b|\bEND\b'
+    PRINT = r'\bprint\b|\bPRINT\b'
+    WRITE = r'\bwrite\b|\bWRITE\b'
+    READ = r'\bread\b|READ\b'
+    WHILE = r'\bwhile\b|\bWHILE\b'
+    BREAK = r'\bbreak\b|\bBREAK\b'
+    IF = r'\bif\b|IF\b'
+    THEN = r'\bthen\b|\bTHEN\b'
+    ELSE = r'\belse|\bELSE\b'
+    RETURN = r'\breturn\b|\bRETURN\b'
+    SKIP = r'\bskip\b|\bSKIP\b'
+    INT = r'\bint\b|\bINT\b'
+    FLOAT = r'\bfloat\b|\bFLOAT\b'
+    DO = r'\bdo\b|\bDO\b'
 
-    # Literales
-    SCONST = r'"[^"]*"'
-    IDENTIFIER = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
-    # Expresiones regulares para los tokens
+    # Operadores y símbolos
     PLUS = r'\+'
     MINUS = r'-'
     TIMES = r'\*'
@@ -42,29 +50,32 @@ class Lexer(sly.Lexer):
     RPAREN = r'\)'
     COMMA = r','
     SEMICOLON = r';'
-    LE = r'<='
-    GE = r'>='
-    EQ = r'=='
-    LT = r'<'
-    GT = r'>'
-    NE = r'!='
     LBRACKET = r'\['
     RBRACKET = r'\]'
+    LE = r'<=' # Operador menor o igual que
+    GE = r'>=' # Operador mayor o igual que
+    LT = r'<'  # Operador menor que
+    GT = r'>'  # Operador mayor que
+    EQ = r'==' # Operador igual que
 
+    IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
+
+    # Literales numéricos y cadenas
     @_(r'\d+\.\d*')
-    def RCONST(self, t):
+    def FNUMBER(self, t):
         t.value = float(t.value)
         return t
 
     @_(r'\d+')
-    def ICONST(self, t):
+    def INUMBER(self, t):
         t.value = int(t.value)
         return t
 
+    STRING = r'"([^"]*)"'
+
     @_(r'\n+')
-    def NEWLINE(self, t):
-        self.lineno += t.value.count('\n')  # Incrementa el número de línea por cada salto de línea
-        return t
+    def ignore_newline(self, t):
+        self.lineno += t.value.count('\n')
 
     def error(self, t):
         print(f"Caracter ilegal '{t.value[0]}' en la línea {self.lineno}")
